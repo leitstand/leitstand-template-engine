@@ -1,0 +1,6 @@
+engine: golang
+main_template: "main.gojson"
+main_pattern: "*.gojson"
+post_processors:
+  - removeTrailingCommas
+  - uglyJSON

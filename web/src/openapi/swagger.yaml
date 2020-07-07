@@ -1,0 +1,194 @@
+basePath: /
+definitions:
+  job.Job:
+    properties:
+      description:
+        description: Description of the Job.
+        type: string
+      id:
+        description: Id of the job
+        type: string
+      result:
+        $ref: '#/definitions/job.Result'
+        type: object
+      state:
+        description: State of the Job.
+        enum:
+        - PENDING
+        - DONE
+        type: string
+    type: object
+  job.Result:
+    properties:
+      data:
+        description: Body data if it would be in an synchronous call
+        type: object
+      status:
+        description: Http Code if it would be in an synchronous call
+        type: integer
+    type: object
+  rest.GenerationRequest:
+    properties:
+      put_back_url:
+        description: PutBackURL where the result should be sent back, only used for the async call
+        type: string
+      variables:
+        additionalProperties: true
+        description: Variables for the generation
+        type: object
+    type: object
+  util.Message:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: |-
+    _Copyright (C) 2020, RtBrick, Inc._
+
+    Licensed under the Apache License, Version 2.0 (the "License"); you may not
+    use this file except in compliance with the License.  You may obtain a copy
+    of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+    WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+    License for the specific language governing permissions and limitations under
+    the License.
+  license: {}
+  title: leitstand-template-engine API
+  version: "0.1"
+paths:
+  /api/v1/ctrld/jobs:
+    get:
+      consumes:
+      - application/json
+      description: Lists all jobs as list. Filtering is not possible.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: list of jobs
+          schema:
+            items:
+              $ref: '#/definitions/job.Job'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.Message'
+      summary: '"Jobs": list all jobs'
+      tags:
+      - jobs
+  /api/v1/ctrld/jobs/{id}:
+    get:
+      consumes:
+      - application/json
+      description: |-
+        Returns a particular job.
+        **Characteristics:**
+        * Operation: **sync**
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Job Done
+          schema:
+            $ref: '#/definitions/job.Result'
+        "202":
+          description: Operation is still pending
+          schema:
+            $ref: '#/definitions/job.Result'
+        "404":
+          description: job not found
+          schema:
+            $ref: '#/definitions/util.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.Message'
+      summary: '"Jobs": get a particular job'
+      tags:
+      - jobs
+  /template-engine/api/v1/templates/{template_name}/_generate:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        generate a configuration file
+        **Characteristics:**
+        * Operation: **asynchronous**
+      parameters:
+      - description: callback response uri
+        in: header
+        name: response_uri
+        type: string
+      - description: name of the template
+        in: path
+        name: template_name
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/rest.GenerationRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/util.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.Message'
+      summary: generate a configuration file
+      tags:
+      - template-engine
+  /template-engine/api/v1/templates/{template_name}/_generatesync:
+    post:
+      consumes:
+      - application/json
+      description: |-
+        generate a configuration file
+        **Characteristics:**
+        * Operation: **synchronous**
+      parameters:
+      - description: name of the template
+        in: path
+        name: template_name
+        required: true
+        type: string
+      - description: body
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/rest.GenerationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: config file
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/util.Message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/util.Message'
+      summary: generate a configuration file
+      tags:
+      - template-engine
+swagger: "2.0"
+tags:
+- name: template-engine

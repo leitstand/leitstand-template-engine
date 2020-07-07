@@ -1,0 +1,4 @@
+{
+  "http_address": "localhost:8082",
+  "template_path": "templates"
+}

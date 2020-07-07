@@ -1,0 +1,4 @@
+{
+  "http_address": ":80",
+  "template_path": "/etc/rtbrick/leitstand-template-engine/templates"
+}

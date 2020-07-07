@@ -1,0 +1,143 @@
+:toc:
+:contribution-flow: https://github.com/leitstand/leitstand/blob/master/doc/leitstand-contribution.md
+:golang-standard-project-layout: https://github.com/golang-standards/project-layout
+:url-golang-template: https://golang.org/pkg/text/template/
+:url-sprig-functions: http://masterminds.github.io/sprig/
+= Leitstand Template Engine
+
+== Contribution
+
+Please refer to {contribution-flow}[Leitstand Github Contribution Flow] for general contribution questions.
+
+== Project structure
+
+Please refer to {golang-standard-project-layout}[Standard Go Project Layout] for more details.
+
+The `templates` folder is for examples.
+There are also integration tests for this examples under `pgk/it`.
+
+== Concepts
+
+The template engine consists of 3 main parts.
+
+1. Template storage
+2. Template execution engine (`pkg/configen`)
+3. cmd
+
+== Template storage
+
+A folder in the filesystem serves as template storage for the engine.
+The content of the folder follows a convention.
+
+=== File system
+
+.Template folder structure
+.Template folder structure
+[source]
+----
+templates
+├── includes
+│   └── <include-template>.gojson
+└── <template name>
+    ├── config.yaml
+    ├── <include-template>.gojson
+    └── <main-template>.gojson
+----
+
+The template engine uses one templates folder where all the templates are stored.
+Each template resides in his own folder, the folder name is the template name.
+The `config.yaml` file inside a template folder indicates that this folder is a template.
+In this file also other configurations for the template engine can be made.
+
+The template folder contains one `main-template` and can contain multiple `include-templates.
+The include-templates can be included into the main template.
+
+Folders that don't contain a `config.yaml` are not treated as templates.
+These folders can be used as containers for other include-template files.
+
+
+=== Template config
+
+This section describes the `config.yaml` file.
+Image this folder structure for the next examples.
+
+.Simple example folder structure
+[source,]
+----
+templates
+├── includes
+│   └── global_include.gojson
+└── sample
+    ├── config.yaml
+    ├── local_include.gojson
+    └── main.gojson
+----
+
+Here there is a main-template which includes the local_include-template and the global_include-template.
+The `config.yaml` is used by the template engine to parse the right files, so that the include-directives work.
+
+.templates/sample/config.yaml
+[source,yaml]
+----
+include::templates/sample/config.yaml[]
+----
+
+.config.yaml attributes
+[cols="1,1,4"]
+|===
+| Attribute | Default | Description
+
+|engine          | golang | selects the template engine, at the moment only golang is supported
+|main_template   | none   | points to the entrypoint of the rendering process, this template is used as the top most, it hast to be included in the main pattern.
+|main_pattern    | none   | describes which files the engine should parse from the template folder.
+|include_petern  | none   | describes which files the engine should additionally parse relative to the templates folder.
+|post_processors | none   | allows to specify post processors that are used in that order on top of the generated output.
+|===
+
+.Post processors
+[cols="1,4"]
+|===
+| Attribute | Description
+
+|removeTrailingCommas   | removes in json files the commas which are not valid, this makes the template much easier
+|removeEmptyLines       | removes empty lines
+|prettyJSON             | Pretty converts the input json into a more human readable format where each element is on it's own line with clear indentation
+|uglyJSON               | Ugly removes insignificant space characters from the input json byte slice and returns the compacted result.
+|===
+
+== GO Lang Template Engine
+
+The default engine is the golang template engine.
+This gives some links to more detailed information.
+
+The GO Lange template engine is based on:
+
+* {url-golang-template}[GoLang test template] +
+The golang text template engine.
+This allows evaluating arguments, execute actions and include other templates.
+* {url-sprig-functions}[sprig functions] +
+Beside of the default functions golang already provides, the sprig function library is added to the engine.
+
+== Commands
+
+=== Template engine server (template-engine)
+
+The template engine server combines all parts in a web application.
+
+In link:web/src/openapi/swagger.yaml[swagger definition] the API is documented.
+
+=== TestKit (template-engine-test)
+
+In order to do a fast template prototyping we developed a test kit.
+The test kit allows to execute a template with a given variable set and validate the outcome against an expected result.
+
+To execute we have to specify:
+
+* templatePath: Template main folder (default ".")
+* template: Template name
+* format: File format [txt, json, json5] (default "txt")
+
+So for example if we execute `template-engine-test  -template sample -test example -format json` inside the templates folder, this command will execute the `sample` template with the content of the `example_variables.json` file as input variables.
+After execution the outcome is stored in the `example_got.json` file, and validated against the `example_result.json` file.
+The format not only specifies the file endings, it also specifies how the validation is done.
+So for example the json format does not care about ordering of whitespace differences.

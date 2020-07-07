@@ -1,0 +1,10 @@
+POST http://localhost:8082/template-engine/api/v1/templates/sample/_generatesync
+accept: application/json
+Content-Type: application/json
+
+{
+"variables":
+< ./example_variables.json
+}
+###
+

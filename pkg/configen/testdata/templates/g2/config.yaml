@@ -1,0 +1,4 @@
+engine: golang
+main_template: "main.gotext"
+main_pattern: "*.gotext"
+include_pattern: "includes/*.gotext"
