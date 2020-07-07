@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go test pkg" type="GoTestRunConfiguration" factoryName="Go Test" nameIsGenerated="true">
+    <module name="leitstand-template-engine" />
+    <working_directory value="$PROJECT_DIR$/pkg" />
+    <framework value="gotest" />
+    <kind value="DIRECTORY" />
+    <package value="github.com/leitstand/leitstand-template-engine" />
+    <directory value="$PROJECT_DIR$/pkg" />
+    <filePath value="$PROJECT_DIR$/" />
+    <method v="2" />
+  </configuration>
+</component>

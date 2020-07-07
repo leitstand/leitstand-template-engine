@@ -30,14 +30,14 @@ import (
 func (app *application) routes(serveFromFileSystem bool) (http.Handler, error) {
 	router := mux.NewRouter()
 	router.NewRoute().Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/public/", http.StatusTemporaryRedirect)
+		http.Redirect(w, r, "/template-engine/public/", http.StatusTemporaryRedirect)
 	})
 	if !serveFromFileSystem {
 		staticServer := http.FileServer(app.staticFS)
-		router.NewRoute().Name("public").PathPrefix("/public/").Handler(http.StripPrefix("/public", staticServer))
+		router.NewRoute().Name("public").PathPrefix("/template-engine/public/").Handler(http.StripPrefix("/template-engine/public", staticServer))
 	} else {
 		fileServer := http.FileServer(http.Dir("./web/src"))
-		router.PathPrefix("/public").Handler(http.StripPrefix("/public", fileServer))
+		router.PathPrefix("/template-engine/public").Handler(http.StripPrefix("/template-engine/public", fileServer))
 	}
 
 	app.jobApplication.Routes("/template-engine/api/v1", router)

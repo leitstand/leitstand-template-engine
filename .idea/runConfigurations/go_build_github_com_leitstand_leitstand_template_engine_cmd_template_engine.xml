@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="go build github.com/leitstand/leitstand-template-engine/cmd/template-engine" type="GoApplicationRunConfiguration" factoryName="Go Application" nameIsGenerated="true">
+    <module name="leitstand-template-engine" />
+    <working_directory value="$PROJECT_DIR$" />
+    <parameters value="-fs -config config/config.json" />
+    <kind value="DIRECTORY" />
+    <filePath value="$PROJECT_DIR$/cmd/template-engine/template-engine.go" />
+    <directory value="$PROJECT_DIR$/cmd/template-engine" />
+    <method v="2" />
+  </configuration>
+</component>
