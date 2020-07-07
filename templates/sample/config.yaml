@@ -1,0 +1,7 @@
+engine: golang
+main_template: "main.gojson"
+main_pattern: "*.gojson"
+include_pattern: "includes/*.gojson"
+post_processors:
+  - removeTrailingCommas
+  - prettyJSON

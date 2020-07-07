@@ -1,0 +1,11 @@
+{{define "t1"}}
+    "hostname": "static",
+{{end}}
+{
+    {{template "t1"}}
+    "description": "{{.description}}",
+    "interfaces": {
+        {{template "local_include.gojson" .interfaces}}
+    },
+    "list": {{template "global_include.gojson" .}}
+}

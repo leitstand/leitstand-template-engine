@@ -1,0 +1,4 @@
+engine: golang
+main_template: "main.goyaml"
+main_pattern:
+include_pattern:
