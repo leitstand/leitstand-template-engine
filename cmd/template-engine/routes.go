@@ -32,6 +32,9 @@ func (app *application) routes(serveFromFileSystem bool) (http.Handler, error) {
 	router.NewRoute().Path("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/template-engine/public/", http.StatusTemporaryRedirect)
 	})
+	router.NewRoute().Path("/template-engine").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/template-engine/public/", http.StatusTemporaryRedirect)
+	})
 	if !serveFromFileSystem {
 		staticServer := http.FileServer(app.staticFS)
 		router.NewRoute().Name("public").PathPrefix("/template-engine/public/").Handler(http.StripPrefix("/template-engine/public", staticServer))
