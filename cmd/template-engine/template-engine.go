@@ -63,6 +63,9 @@ type application struct {
 // @description WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
 // @description License for the specific language governing permissions and limitations under
 // @description the License.
+// @contact.name Engineering (RtBrick)
+// @contact.url http://www.rtbrick.com
+// @contact.email eng@rtbrick.com
 // @basepath /
 // @host
 // @tag.name template-engine
