@@ -47,3 +47,10 @@ linters:
 	};
 	golint -set_exit_status ./cmd/... ./pkg/...
 	go vet ./cmd/... ./pkg/...
+
+build_for_major_platforms:
+	env GOOS=windows GOARCH=386 go build -o ./bin/windows_386/template-engine-test.exe ./cmd/template-engine-test/
+	env GOOS=windows GOARCH=amd64 go build -o ./bin/windows_amd64/template-engine-test.exe ./cmd/template-engine-test/
+	env GOOS=linux GOARCH=amd64 go build -o ./bin/linux_amd64/template-engine-test ./cmd/template-engine-test/
+	env GOOS=linux GOARCH=386 go build -o ./bin/linux_386/template-engine-test ./cmd/template-engine-test/
+	env GOOS=darwin GOARCH=amd64 go build -o ./bin/darwin_amd64/template-engine-test ./cmd/template-engine-test/

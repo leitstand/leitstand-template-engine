@@ -65,7 +65,7 @@ info:
   title: leitstand-template-engine API
   version: "0.1"
 paths:
-  /api/v1/ctrld/jobs:
+  /template-engine/api/v1/jobs:
     get:
       consumes:
       - application/json
@@ -86,7 +86,7 @@ paths:
       summary: '"Jobs": list all jobs'
       tags:
       - jobs
-  /api/v1/ctrld/jobs/{id}:
+  /template-engine/api/v1/jobs/{id}:
     get:
       consumes:
       - application/json
@@ -94,6 +94,12 @@ paths:
         Returns a particular job.
         **Characteristics:**
         * Operation: **sync**
+      parameters:
+      - description: id of the job
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
