@@ -28,6 +28,7 @@ import (
 )
 
 //go:generate moq -out RepositoryMock.go  . Repository
+
 //Repository ...
 type Repository interface {
 	//Jobs returns a list of jobs

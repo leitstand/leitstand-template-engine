@@ -63,7 +63,7 @@ func ReadJSONObject(filename string, object interface{}) error {
 	return json.Unmarshal([]byte(byteValue), object)
 }
 
-//ValidateAndGetVariableFromPath
+//ValidateAndGetVariableFromPath ...
 func ValidateAndGetVariableFromPath(w http.ResponseWriter, req *http.Request, variableName string) (string, bool) {
 	vars := mux.Vars(req)
 	name, set := vars[variableName]

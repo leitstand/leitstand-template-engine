@@ -1,1 +1,3 @@
 /templates/*/*_got.*
+/vendor/
+/bin/

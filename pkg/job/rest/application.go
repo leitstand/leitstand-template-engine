@@ -44,7 +44,7 @@ func NewApplication(repository job.Repository) *Application {
 //@Produce  json
 //@Success 200 {array} job.Job "list of jobs"
 //@Failure 500 {object} util.Message
-//@Router /api/v1/ctrld/jobs [get]
+//@Router /template-engine/api/v1/jobs [get]
 func (app *Application) jobs(w http.ResponseWriter, _ *http.Request) {
 	jobs, err := app.repository.Jobs()
 	if err != nil {
@@ -67,11 +67,12 @@ func (app *Application) jobs(w http.ResponseWriter, _ *http.Request) {
 //@Tags jobs
 //@Accept  json
 //@Produce  json
+//@Param id path string true "id of the job"
 //@Success 200 {object} job.Result "Job Done"
 //@Success 202 {object} job.Result "Operation is still pending"
 //@Success 404 {object} util.Message "job not found"
 //@Failure 500 {object} util.Message
-//@Router /api/v1/ctrld/jobs/{id} [get]
+//@Router /template-engine/api/v1/jobs/{id} [get]
 func (app *Application) job(w http.ResponseWriter, req *http.Request) {
 	id, ok := validateAndGetIDFromPath(w, req)
 	if !ok {

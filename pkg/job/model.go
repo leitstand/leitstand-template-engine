@@ -23,6 +23,7 @@ import (
 	"github.com/leitstand/leitstand-template-engine/pkg/util"
 )
 
+//JobState enum
 type JobState string
 
 const (
