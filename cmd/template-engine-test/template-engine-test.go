@@ -51,7 +51,7 @@ func main() {
 	r := configen.NewRepository(*templatePath)
 
 	var variables map[string]interface{}
-	variablesFile := fmt.Sprintf("%s/%s/%s_variables.%s", *templatePath, *template, *test, *format)
+	variablesFile := fmt.Sprintf("%s/%s/%s_variables.json", *templatePath, *template, *test)
 	err := util.ReadJSONObject(variablesFile, &variables)
 	if err != nil {
 		log.Error().Err(err).Msg("can't find variables file")
@@ -72,11 +72,6 @@ func main() {
 	gotFile := fmt.Sprintf("%s/%s/%s_got.%s", *templatePath, *template, *test, *format)
 	_ = ioutil.WriteFile(gotFile, got, os.ModePerm)
 	switch *format {
-	case "txt":
-		if diff := cmp.Diff(string(want), string(got)); diff != "" {
-			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
-			return
-		}
 	case "json":
 		if diff := cmp.Diff(transformToJSONObject(want), transformToJSONObject(got)); diff != "" {
 			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
@@ -87,8 +82,13 @@ func main() {
 			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
 			return
 		}
+	case "txt":
+		fallthrough
 	default:
-		log.Error().Msg("unknown format")
+		if diff := cmp.Diff(string(want), string(got)); diff != "" {
+			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
+			return
+		}
 	}
 	log.Info().Msg("Success!")
 }
