@@ -90,6 +90,7 @@ func TestRepository_GenerateFile(t *testing.T) {
 		name           string
 		templatePath   string
 		templateFolder string
+		format         string
 		want           []byte
 		wantErr        bool
 		wantedErr      error
@@ -125,7 +126,7 @@ func TestRepository_GenerateFile(t *testing.T) {
 			variablesFile := fmt.Sprintf("%s/%s/%s", tt.templatePath, tt.templateFolder, "variables.json")
 			_ = util.ReadJSONObject(variablesFile, &variables)
 
-			got, err := r.GenerateFile(tt.templateFolder, variables)
+			got, format, err := r.GenerateFile(tt.templateFolder, variables)
 			if tt.wantErr {
 				if err == nil {
 					t.Errorf("parseConfigFile() error = %v, wantErr %v", err, tt.wantErr)
@@ -137,6 +138,9 @@ func TestRepository_GenerateFile(t *testing.T) {
 			}
 			is.NoErr(err)
 			if diff := cmp.Diff(string(tt.want), string(got)); diff != "" {
+				t.Errorf("mismatch (-want +got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tt.format, format); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
 		})

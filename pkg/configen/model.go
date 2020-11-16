@@ -53,4 +53,8 @@ type TemplateConfig struct {
 	MainTemplate string `yaml:"main_template"`
 	// PostProcessors are used to manipulate the generated code after generation.
 	PostProcessors []string `yaml:"post_processors"`
+	// Format gives the output format of the template.
+	// e.g.: json, json5, text (Default is text)
+	// This information is also used to find the correct response Content-Type for the sync restcall.
+	OutputFormat string `yaml:"output_format"`
 }

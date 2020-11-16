@@ -38,19 +38,20 @@ func newGoEngine() (*GoEngine, error) {
 }
 
 // GenerateFile executes a template and adds a variable set
-func (r GoEngine) GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, error) {
+func (r GoEngine) GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, string, error) {
 	t := template.New("base").Funcs(sprig.TxtFuncMap())
 	templates, err := t.ParseGlob(config.MainPattern)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	if len(config.IncludePattern) > 0 {
 		templates, err = templates.ParseGlob(config.IncludePattern)
 	}
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	return r.executeTemplate(config.MainTemplate, templates, data)
+	result, err := r.executeTemplate(config.MainTemplate, templates, data)
+	return result, config.OutputFormat, err
 }
 
 func (r *GoEngine) executeTemplate(templateName string, template *template.Template, data interface{}) ([]byte, error) {

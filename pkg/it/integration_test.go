@@ -42,13 +42,11 @@ func TestRepository_IntegrationTest(t *testing.T) {
 		templatePath string
 		template     string
 		test         string
-		format       string
 	}{
 		{
 			templatePath: "../../templates",
 			template:     "sample",
 			test:         "example",
-			format:       "json",
 		},
 	}
 	for _, tt := range tests {
@@ -57,28 +55,27 @@ func TestRepository_IntegrationTest(t *testing.T) {
 			r := configen.NewRepository(tt.templatePath)
 
 			var variables map[string]interface{}
-			variablesFile := fmt.Sprintf("%s/%s/%s_variables.%s", tt.templatePath, tt.template, tt.test, tt.format)
+			variablesFile := fmt.Sprintf("%s/%s/%s_variables.json", tt.templatePath, tt.template, tt.test)
 			err := util.ReadJSONObject(variablesFile, &variables)
 			if err != nil {
 				log.Error().Err(err).Msg("can't find variables file")
 				return
 			}
-			resultFile := fmt.Sprintf("%s/%s/%s_result.%s", tt.templatePath, tt.template, tt.test, tt.format)
-			want, err := ioutil.ReadFile(resultFile)
-			is.NoErr(err)
 
-			got, err := r.GenerateFile(tt.template, variables)
+			got, format, err := r.GenerateFile(tt.template, variables)
 			if err != nil {
 				log.Error().Err(err).Msg("error in generation")
 				return
 			}
-			gotFile := fmt.Sprintf("%s/%s/%s_got.%s", tt.templatePath, tt.template, tt.test, tt.format)
-			_ = ioutil.WriteFile(gotFile, got, os.ModePerm)
-			switch tt.format {
-			case "txt":
-				if diff := cmp.Diff(string(want), string(got)); diff != "" {
-					t.Errorf("mismatch (-want +got):\n%s", diff)
-				}
+			gotFile := fmt.Sprintf("%s/%s/%s_got.%s", tt.templatePath, tt.template, tt.test, format)
+			err = ioutil.WriteFile(gotFile, got, os.ModePerm)
+			is.NoErr(err)
+
+			resultFile := fmt.Sprintf("%s/%s/%s_result.%s", tt.templatePath, tt.template, tt.test, format)
+			want, err := ioutil.ReadFile(resultFile)
+			is.NoErr(err)
+
+			switch format {
 			case "json":
 				if diff := cmp.Diff(transformToJSONObject(want), transformToJSONObject(got)); diff != "" {
 					t.Errorf("mismatch (-want +got):\n%s", diff)
@@ -87,8 +84,12 @@ func TestRepository_IntegrationTest(t *testing.T) {
 				if diff := cmp.Diff(transformToJSON5Object(want), transformToJSON5Object(got)); diff != "" {
 					t.Errorf("mismatch (-want +got):\n%s", diff)
 				}
+			case "txt":
+				fallthrough
 			default:
-				t.Error("unknown format")
+				if diff := cmp.Diff(string(want), string(got)); diff != "" {
+					t.Errorf("mismatch (-want +got):\n%s", diff)
+				}
 			}
 		})
 	}

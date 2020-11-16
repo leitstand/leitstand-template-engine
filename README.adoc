@@ -37,7 +37,7 @@ The content of the folder follows a convention.
 ----
 templates
 ├── includes
-│   └── <include-template>.gojson
+│   └── <include-template>.gojson
 └── <template name>
     ├── config.yaml
     ├── <include-template>.gojson
@@ -66,7 +66,7 @@ Image this folder structure for the next examples.
 ----
 templates
 ├── includes
-│   └── global_include.gojson
+│   └── global_include.gojson
 └── sample
     ├── config.yaml
     ├── local_include.gojson
@@ -90,7 +90,8 @@ include::templates/sample/config.yaml[]
 |engine          | golang | selects the template engine, at the moment only golang is supported
 |main_template   | none   | points to the entrypoint of the rendering process, this template is used as the top most, it hast to be included in the main pattern.
 |main_pattern    | none   | describes which files the engine should parse from the template folder.
-|include_petern  | none   | describes which files the engine should additionally parse relative to the templates folder.
+|include_pattern | none   | describes which files the engine should additionally parse relative to the templates folder.
+|output_format   | none   | gives the output format of the template (e.g.: json, json5, txt) This information is also used to find the correct response Content-Type for the sync rest call.
 |post_processors | none   | allows to specify post processors that are used in that order on top of the generated output.
 |===
 
