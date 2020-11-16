@@ -37,13 +37,12 @@ func main() {
 	templatePath := flag.String("templatePath", ".", "Template main folder")
 	template := flag.String("template", "", "Template name")
 	test := flag.String("test", "", "Name of the test")
-	format := flag.String("format", "txt", "File format [string, json, txt]")
 	//logging
 	debug := flag.Bool("debug", false, "turn on debug logging")
 	console := flag.Bool("console", true, "turn on pretty console logging")
 	flag.Parse()
 
-	if *templatePath == "" || *template == "" || *test == "" || *format == "" {
+	if *templatePath == "" || *template == "" || *test == "" {
 		flag.Usage()
 		return
 	}
@@ -57,21 +56,23 @@ func main() {
 		log.Error().Err(err).Msg("can't find variables file")
 		return
 	}
-	resultFile := fmt.Sprintf("%s/%s/%s_result.%s", *templatePath, *template, *test, *format)
+
+	got, format, err := r.GenerateFile(*template, variables)
+	if err != nil {
+		log.Error().Err(err).Msg("error in generation")
+		return
+	}
+
+	resultFile := fmt.Sprintf("%s/%s/%s_result.%s", *templatePath, *template, *test, format)
 	want, err := ioutil.ReadFile(resultFile)
 	if err != nil {
 		log.Error().Err(err).Msg("can't find result file")
 		return
 	}
 
-	got, err := r.GenerateFile(*template, variables)
-	if err != nil {
-		log.Error().Err(err).Msg("error in generation")
-		return
-	}
-	gotFile := fmt.Sprintf("%s/%s/%s_got.%s", *templatePath, *template, *test, *format)
+	gotFile := fmt.Sprintf("%s/%s/%s_got.%s", *templatePath, *template, *test, format)
 	_ = ioutil.WriteFile(gotFile, got, os.ModePerm)
-	switch *format {
+	switch format {
 	case "json":
 		if diff := cmp.Diff(transformToJSONObject(want), transformToJSONObject(got)); diff != "" {
 			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)

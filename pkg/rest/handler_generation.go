@@ -61,7 +61,7 @@ func (app *Application) generateConfigurationAsync(w http.ResponseWriter, req *h
 	app.jobRepository.WriteJobResult(w, http.StatusAccepted, asyncJob)
 	go func() {
 		defer app.jobRepository.MakeCallbackToURI(responseURI, asyncJob)
-		result, err := app.repository.GenerateFile(templateName, requestBody.Variables)
+		result, _, err := app.repository.GenerateFile(templateName, requestBody.Variables)
 		if err != nil {
 			asyncJob.SetResult(job.NewAsyncResultWithMessage(http.StatusBadRequest, fmt.Sprintf("error %v", err)))
 			return
@@ -129,10 +129,13 @@ func (app *Application) generateConfigurationSync(w http.ResponseWriter, req *ht
 		return
 	}
 
-	result, err := app.repository.GenerateFile(templateName, requestBody.Variables)
+	result, format, err := app.repository.GenerateFile(templateName, requestBody.Variables)
 	if err != nil {
 		util.WriteMessage(w, http.StatusBadRequest, fmt.Sprintf("error %v", err))
 		return
+	}
+	if format == "json" || format == "json5" {
+		w.Header().Set("Content-Type", "application/json")
 	}
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(result)

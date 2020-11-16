@@ -42,7 +42,7 @@ func NewRepository(templatePath string) *Repository {
 // TemplateEngine allow to generate files
 type TemplateEngine interface {
 	// GenerateFile executes a template and added a variable set
-	GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, error)
+	GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, string, error)
 }
 
 func (r *Repository) newEngine(name Engine) (TemplateEngine, error) {
@@ -56,30 +56,30 @@ func (r *Repository) newEngine(name Engine) (TemplateEngine, error) {
 }
 
 // GenerateFile executes a template and added a variable set
-func (r Repository) GenerateFile(templateFolder string, variables map[string]interface{}) ([]byte, error) {
+func (r Repository) GenerateFile(templateFolder string, variables map[string]interface{}) ([]byte, string, error) {
 	config, err := parseConfigFile(r.path, templateFolder)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	engine, err := r.newEngine(config.TemplateEngine)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
-	result, err := engine.GenerateFile(config, variables)
+	result, format, err := engine.GenerateFile(config, variables)
 	if err != nil {
-		return result, err
+		return result, format, err
 	}
 	for _, postProcessorName := range config.PostProcessors {
 		processor, ok := postProcessors[postProcessorName]
 		if !ok {
-			return nil, errors.WithMessage(ErrPostProcessorNotFound, string(postProcessorName))
+			return nil, "", errors.WithMessage(ErrPostProcessorNotFound, postProcessorName)
 		}
 		result, err = processor(result)
 		if err != nil {
-			return result, err
+			return result, format, err
 		}
 	}
-	return result, err
+	return result, format, err
 }
 func parseConfigFile(templatePath string, templateFolder string) (*TemplateConfig, error) {
 	configFile := fmt.Sprintf("%s/%s/config.yaml", templatePath, templateFolder)
