@@ -37,6 +37,7 @@ func main() {
 	templatePath := flag.String("templatePath", ".", "Template main folder")
 	template := flag.String("template", "", "Template name")
 	test := flag.String("test", "", "Name of the test")
+	skipValidation := flag.Bool("n", false, "skips the validation")
 	//logging
 	debug := flag.Bool("debug", false, "turn on debug logging")
 	console := flag.Bool("console", true, "turn on pretty console logging")
@@ -63,35 +64,40 @@ func main() {
 		return
 	}
 
-	resultFile := fmt.Sprintf("%s/%s/%s_result.%s", *templatePath, *template, *test, format)
-	want, err := ioutil.ReadFile(resultFile)
-	if err != nil {
-		log.Error().Err(err).Msg("can't find result file")
-		return
-	}
-
 	gotFile := fmt.Sprintf("%s/%s/%s_got.%s", *templatePath, *template, *test, format)
 	_ = ioutil.WriteFile(gotFile, got, os.ModePerm)
-	switch format {
-	case "json":
-		if diff := cmp.Diff(transformToJSONObject(want), transformToJSONObject(got)); diff != "" {
-			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
+
+	log.Info().Msgf("Wrote file %s!", gotFile)
+
+	if !*skipValidation {
+		resultFile := fmt.Sprintf("%s/%s/%s_result.%s", *templatePath, *template, *test, format)
+		want, err := ioutil.ReadFile(resultFile)
+		if err != nil {
+			log.Error().Err(err).Msg("can't find result file")
 			return
 		}
-	case "json5":
-		if diff := cmp.Diff(transformToJSON5Object(want), transformToJSON5Object(got)); diff != "" {
-			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
-			return
+
+		switch format {
+		case "json":
+			if diff := cmp.Diff(transformToJSONObject(want), transformToJSONObject(got)); diff != "" {
+				log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
+				return
+			}
+		case "json5":
+			if diff := cmp.Diff(transformToJSON5Object(want), transformToJSON5Object(got)); diff != "" {
+				log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
+				return
+			}
+		case "txt":
+			fallthrough
+		default:
+			if diff := cmp.Diff(string(want), string(got)); diff != "" {
+				log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
+				return
+			}
 		}
-	case "txt":
-		fallthrough
-	default:
-		if diff := cmp.Diff(string(want), string(got)); diff != "" {
-			log.Warn().Msgf("mismatch (-want +got):\n%s", diff)
-			return
-		}
+		log.Info().Msg("Success!")
 	}
-	log.Info().Msg("Success!")
 }
 func initializeLogger(debug, console *bool) {
 	var w io.Writer
