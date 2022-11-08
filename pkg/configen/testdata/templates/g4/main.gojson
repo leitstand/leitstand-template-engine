@@ -1,21 +1,33 @@
 {
-{{ if .image.image_version | semverMatches .feature_toggles.A }}
+{{/* TC1: Feature is enabled when the feature toggle constraint matches */}}
+{{ if .image.image_version | featureIsEnabled .feature_toggles.A }}
 "a":"Feature A enabled",    
 {{ end }}
-{{ if semverMatches .feature_toggles.A .image.image_version}}
+{{ if featureIsEnabled .feature_toggles.A .image.image_version}}
 "A":"Feature A enabled",    
 {{ end }}
-{{ if .image.image_version | semverMatches .feature_toggles.B }}
-"b":"Feature B disabled", 
+
+{{/* TC2: Feature is not enabled when the feature toggle constraint does not match */}}
+{{ if .image.image_version | featureIsEnabled .feature_toggles.B }}
+"b":"Feature B enabled", 
 {{ end }}
-{{ if semverMatches .feature_toggles.B .image.image_version }}
-"b":"Feature B disabled", 
-{{ end }}
-{{ if .image.image_version | semverMatches .feature_toggles.C }}
-"c":"Feature C disabled"    
-{{ end }}
-{{ if semverMatches .feature_toggles.C .image.image_version }}
-"c":"Feature C disabled"    
+{{ if featureIsEnabled .feature_toggles.B .image.image_version }}
+"b":"Feature B enabled", 
 {{ end }}
 
+{{/* TC3: Feature is not enabled when the feature toggle constraint is empty */}}
+{{ if .image.image_version | featureIsEnabled .feature_toggles.C }}
+"c":"Feature C enabled"    
+{{ end }}
+{{ if featureIsEnabled .feature_toggles.C .image.image_version }}
+"c":"Feature C enabled"    
+{{ end }}
+
+{{/* TC4: Feature is not enabled when the feature toggle constraint does not exist */}}
+{{ if .image.image_version | featureIsEnabled .feature_toggles.D }}
+"c":"Feature D enabled"    
+{{ end }}
+{{ if featureIsEnabled .feature_toggles.D .image.image_version }}
+"c":"Feature D enabled"    
+{{ end }}
 }

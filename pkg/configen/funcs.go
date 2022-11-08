@@ -15,23 +15,43 @@
  */
 package configen
 
-import sv2 "github.com/Masterminds/semver"
+import (
+	"fmt"
+	"reflect"
 
-func semverMatches(constraint, version interface{}) (bool, error) {
+	sv2 "github.com/Masterminds/semver"
+)
 
-	if version == nil || constraint == nil {
+func featureIsEnabled(constraint, version interface{}) (bool, error) {
+
+	// If no feature toggle is specied the feature is disable by default.
+	if constraint == nil {
 		return false, nil
 	}
 
-	c, err := sv2.NewConstraint(constraint.(string))
+	// The constraint is supposed to be a string.
+	s, ok := constraint.(string)
+	if !ok {
+		return false, fmt.Errorf("invalid feature toggle constraint type: %v", reflect.TypeOf(constraint))
+	}
+
+	// An empty feature toggle value is handled like a nil value.
+	if s == "" {
+		return false, nil
+	}
+
+	// Parse the given constraint and report invalid constraints to the template engine.
+	c, err := sv2.NewConstraint(s)
 	if err != nil {
 		return false, err
 	}
 
+	// Parse version and report invalid version value to the template engine.
 	v, err := sv2.NewVersion(version.(string))
 	if err != nil {
 		return false, err
 	}
 
+	// Check whether the version matches the expected range.
 	return c.Check(v), nil
 }

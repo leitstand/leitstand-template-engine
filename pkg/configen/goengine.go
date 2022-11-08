@@ -40,7 +40,7 @@ func newGoEngine() (*GoEngine, error) {
 func (r GoEngine) GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, string, error) {
 	// Augment sprig with an addition versionMatches function.
 	f := sprig.TxtFuncMap()
-	f["semverMatches"] = semverMatches
+	f["featureIsEnabled"] = featureIsEnabled
 	t := template.New("base").Funcs(f)
 	templates, err := t.ParseGlob(config.MainPattern)
 	if err != nil {
