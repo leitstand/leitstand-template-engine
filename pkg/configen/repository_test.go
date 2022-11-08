@@ -115,6 +115,11 @@ func TestRepository_GenerateFile(t *testing.T) {
 			templateFolder: "g3",
 			wantErr:        false,
 			want:           []byte(`{"name":"Chris","static":"static"}`),
+		}, {
+			templatePath:   "testdata/templates",
+			templateFolder: "g4",
+			wantErr:        false,
+			want:           []byte(`{"a":"Feature A enabled","A":"Feature A enabled"}`),
 		},
 	}
 	for _, tt := range tests {

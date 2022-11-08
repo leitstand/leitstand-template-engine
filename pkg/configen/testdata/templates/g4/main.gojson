@@ -1,0 +1,21 @@
+{
+{{ if .image.image_version | semverMatches .feature_toggles.A }}
+"a":"Feature A enabled",    
+{{ end }}
+{{ if semverMatches .feature_toggles.A .image.image_version}}
+"A":"Feature A enabled",    
+{{ end }}
+{{ if .image.image_version | semverMatches .feature_toggles.B }}
+"b":"Feature B disabled", 
+{{ end }}
+{{ if semverMatches .feature_toggles.B .image.image_version }}
+"b":"Feature B disabled", 
+{{ end }}
+{{ if .image.image_version | semverMatches .feature_toggles.C }}
+"c":"Feature C disabled"    
+{{ end }}
+{{ if semverMatches .feature_toggles.C .image.image_version }}
+"c":"Feature C disabled"    
+{{ end }}
+
+}
