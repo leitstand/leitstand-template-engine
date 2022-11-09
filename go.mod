@@ -4,7 +4,7 @@ go 1.14
 
 require (
 	github.com/Masterminds/goutils v1.1.0 // indirect
-	github.com/Masterminds/semver v1.5.0 // indirect
+	github.com/Masterminds/semver v1.5.0 
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/google/go-cmp v0.5.0
 	github.com/google/uuid v1.1.1 // indirect
@@ -18,7 +18,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rakyll/statik v0.1.7
 	github.com/rs/zerolog v1.19.0
-	github.com/stretchr/testify v1.4.0 // indirect
+	github.com/stretchr/testify v1.4.0
 	github.com/tidwall/pretty v1.0.1
 	github.com/yosuke-furukawa/json5 v0.1.1
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect

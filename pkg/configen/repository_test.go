@@ -22,9 +22,9 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/leitstand/leitstand-template-engine/pkg/util"
+	"github.com/stretchr/testify/require"
 
-	isTest "github.com/matryer/is"
+	"github.com/leitstand/leitstand-template-engine/pkg/util"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -66,7 +66,7 @@ func Test_parseConfigFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			is := isTest.New(t)
+			is := require.New(t)
 			got, err := parseConfigFile(tt.args.templatePath, tt.args.templateFolder)
 			if tt.wantErr {
 				if err == nil {
@@ -77,7 +77,7 @@ func Test_parseConfigFile(t *testing.T) {
 				}
 				return
 			}
-			is.NoErr(err)
+			is.NoError(err)
 			if diff := cmp.Diff(tt.want, got); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}
@@ -115,11 +115,16 @@ func TestRepository_GenerateFile(t *testing.T) {
 			templateFolder: "g3",
 			wantErr:        false,
 			want:           []byte(`{"name":"Chris","static":"static"}`),
+		}, {
+			templatePath:   "testdata/templates",
+			templateFolder: "g4",
+			wantErr:        false,
+			want:           []byte(`{"a":"Feature A enabled","A":"Feature A enabled"}`),
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			is := isTest.New(t)
+			is := require.New(t)
 			r := NewRepository(tt.templatePath)
 
 			var variables map[string]interface{}
@@ -136,7 +141,7 @@ func TestRepository_GenerateFile(t *testing.T) {
 				}
 				return
 			}
-			is.NoErr(err)
+			is.NoError(err)
 			if diff := cmp.Diff(string(tt.want), string(got)); diff != "" {
 				t.Errorf("mismatch (-want +got):\n%s", diff)
 			}

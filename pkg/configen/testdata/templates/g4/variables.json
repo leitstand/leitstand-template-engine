@@ -1,0 +1,10 @@
+{
+  "image":{
+    "image_version":"1.1.0"
+  },
+  "feature_toggles":{
+    "A":">=1.1.0",
+    "B":"<1.1.0",
+    "C":""
+  }
+}

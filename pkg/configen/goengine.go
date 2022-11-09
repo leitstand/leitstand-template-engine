@@ -21,7 +21,6 @@ import (
 	"text/template"
 
 	"github.com/Masterminds/sprig"
-
 	"github.com/rs/zerolog/log"
 )
 
@@ -39,7 +38,10 @@ func newGoEngine() (*GoEngine, error) {
 
 // GenerateFile executes a template and adds a variable set
 func (r GoEngine) GenerateFile(config *TemplateConfig, data map[string]interface{}) ([]byte, string, error) {
-	t := template.New("base").Funcs(sprig.TxtFuncMap())
+	// Augment sprig with an addition versionMatches function.
+	f := sprig.TxtFuncMap()
+	f["featureIsEnabled"] = featureIsEnabled
+	t := template.New("base").Funcs(f)
 	templates, err := t.ParseGlob(config.MainPattern)
 	if err != nil {
 		return nil, "", err
